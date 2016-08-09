@@ -1,34 +1,54 @@
-# Config file for automatic testing at travis-ci.org
-# This file will be regenerated if you run travis_pypi_setup.py
-
 language: python
-python: 3.5
 
-env:
-  - TOXENV=py35
-  - TOXENV=py34
-  - TOXENV=py33
-  - TOXENV=py27
-  - TOXENV=py26
-  - TOXENV=pypy
+matrix:
+  include:
+    - python: 2.7
+      env:
+        - COVERAGE=false
+        - TESTERS="pytest mock pytest-mpl coverage"
+        - ARGS="--verbose"
+    - python: 3.4
+      env:
+        - COVERAGE=false
+        - TESTERS="pytest pytest-mpl coverage"
+        - ARGS="--mpl --verbose"
+    - python: 3.5
+      env:
+        - COVERAGE=false
+        - TESTERS="pytest pytest-mpl coverage"
+        - ARGS="--mpl --verbose"
+    - python: 3.5
+      env:
+        - COVERAGE=true
+        - TESTERS="pytest pytest-mpl coverage"
+        - ARGS="--mpl --verbose"
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -U tox
+# Install, update, and setup Miniconda
+# This should not need changing.
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda update --yes conda
+  - conda install --yes nomkl
 
-# command to run tests, e.g. python setup.py test
-script: tox -e ${TOXENV}
+# We just set up a conda environment with the right Python version.
+# This should not need changing.
+install:
+  - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION numpy matplotlib docopt requests pyyaml
+  - source activate test
+  - conda install --yes --channel=conda-forge ${TESTERS}
+  - if [ ${COVERAGE} = true ]; then conda install scipy --yes; fi
+  - pip install codecov
+  - pip install .
 
-{% if cookiecutter.use_pypi_deployment_with_travis == 'y' -%}
-# After you create the Github repo and add it to Travis, run the
-# travis_pypi_setup.py script to finish PyPI deployment setup
-deploy:
-  provider: pypi
-  distributions: sdist bdist_wheel
-  user: {{ cookiecutter.pypi_username }}
-  password:
-    secure: PLEASE_REPLACE_ME
-  on:
-    tags: true
-    repo: {{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}
-    condition: $TOXENV == py27
-{%- endif %}
+script:
+  - python check_{{ cookiecutter.project_slug }}.py ${ARGS}
+
+after_success:
+  - if [ ${COVERAGE} = true ]; then
+      coverage run --source {{ cookiecutter.project_slug }} check_{{ cookiecutter.project_slug }}.py;
+      coverage report -m;
+      codecov;
+    fi
