@@ -9,6 +9,11 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
+PACKAGE_DATA = {
+    '{{ cookiecutter.project_slug }}.tests.baseline_images.test_viz': ['*png'],
+    '{{ cookiecutter.project_slug }}.tests.data': ['*'],
+}
+
 requirements = [
     {%- if cookiecutter.command_line_interface|lower == 'click' %}
     'Click>=6.0',
@@ -41,6 +46,7 @@ setup(
     ],
     package_dir={'{{ cookiecutter.project_slug }}':
                  '{{ cookiecutter.project_slug }}'},
+    package_data=PACKAGE_DATA,
     {%- if 'no' not in cookiecutter.command_line_interface|lower %}
     entry_points={
         'console_scripts': [
@@ -63,10 +69,8 @@ setup(
 {%- endif %}
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
