@@ -1,7 +1,7 @@
 {
-  "full_name": "Audrey Roy Greenfeld",
-  "email": "aroy@alum.mit.edu",
-  "github_username": "audreyr",
+  "full_name": "Paul Hobson (Geosyntec Consultants)",
+  "email": "phobson@geosyntec.com",
+  "github_username": "phobson",
   "project_name": "Python Boilerplate",
   "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
   "project_short_description": "Python Boilerplate contains all the boilerplate you need to create a Python package.",
@@ -20,6 +20,7 @@
       "Not open source"
   ],
   "_copy_without_render": [
-    "*docs/sphinxext/*"
+    "*docs/sphinxext/*",
+    "*generate_vstasks.py"
   ]
 }

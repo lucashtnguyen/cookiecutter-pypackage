@@ -2,7 +2,7 @@ import sys
 import os
 
 
-TEMPLATE = """\
+TASKS = r"""\
 {{
     "version": "0.1.0",
     "isShellCommand": false,
@@ -40,6 +40,20 @@ TEMPLATE = """\
 }}
 """
 
+SETTINGS = r"""\
+// Place your settings in this file to overwrite default and user settings.
+{
+    "python.pythonPath": {pyexec:s},
+    "python.linting.pep8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.unitTest.pyTestEnabled": true,
+    "python.unitTest.pyTestArgs": [
+        "--cov",
+        "--pep8",
+        "--verbose"
+    ]
+}
+"""
 
 if __name__ == '__main__':
     dirname = ".vscode"
@@ -55,7 +69,7 @@ if __name__ == '__main__':
         name = sys.argv[1]
 
     python = '/'.join(sys.executable.split(os.path.sep))
-    config = TEMPLATE.format(pyexec=python, modulename=name)
+    config = TASKS.format(pyexec=python, modulename=name)
 
     with open(filepath, 'w') as configfile:
         configfile.write(config)
